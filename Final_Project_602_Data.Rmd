@@ -1,0 +1,76 @@
+---
+title: "Calgary_Economic_Data_Analysis_602_Project"
+author: "Ammar O."
+date: "2025-02-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+
+```
+
+```{r}
+# Load the CSV file (update path if necessary)
+data <- read_csv("dataset.csv")
+
+# Convert Date column to Date format (assuming "YYYY-MM" structure)
+data$Date <- as.Date(paste0(data$Date, "-01"), format="%Y-%m-%d")
+
+# View dataset structure
+str(data)
+
+```
+
+```{r}
+ggplot(data, aes(x = Date)) +
+  geom_line(aes(y = `Calgary CER Unemployment rate (%)`, color = "Calgary CER")) +
+  geom_line(aes(y = `Alberta Unemployment Rate (%)`, color = "Alberta")) +
+  geom_line(aes(y = `Canada Unemployment rate (%)`, color = "Canada")) +
+  labs(title = "Unemployment Rates Over Time",
+       x = "Date",
+       y = "Unemployment Rate (%)") +
+  theme_minimal() +
+  scale_color_manual(values = c("red", "blue", "green"))
+
+```
+
+```{r}
+ggplot(data, aes(x = Date, y = `Calgary (CMA) Average Hourly Wage Rate ($)`)) +
+  geom_line(color = "purple") +
+  labs(title = "Average Hourly Wage Rate in Calgary",
+       x = "Date",
+       y = "Wage Rate ($)") +
+  theme_minimal()
+
+```
+
+```{r}
+install.packages("car")  # Install if not already installed
+library(car)  # Load the package
+
+# Select a variable (e.g., Wage Rate)
+qqPlot(data$`Calgary (CMA) Average Hourly Wage Rate ($)`, 
+       main = "QQ Plot for Wage Rate")
+
+# Check another variable (e.g., Unemployment Rate)
+qqPlot(data$`Calgary CER Unemployment rate (%)`, 
+       main = "QQ Plot for Unemployment Rate")
+
+```
+
+```{r}
+shapiro.test(data$`Calgary (CMA) Average Hourly Wage Rate ($)`)
+shapiro.test(data$`Calgary CER Unemployment rate (%)`)
+
+```
+***Since the QQ plot points closely follow the diagonal line, the data is normally distributed.Since the Shapiro-Wilk test p-value is > 0.05, the data is likely normal***
+
+
