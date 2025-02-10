@@ -1,15 +1,17 @@
 ---
 title: "Calgary_Economic_Data_Analysis_602_Project"
-author: "Ammar O."
+author: "Ammar O., Ria, Gautham, Romith"
 date: "2025-02-08"
-output: html_document
+output:
+  pdf_document:
+    latex_engine: xelatex
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, echo=FALSE}
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 library(ggplot2)
 library(dplyr)
@@ -18,24 +20,29 @@ library(readr)
 
 ```
 
+**Introduction:** Understanding regional economic trends requires a close look at employment data. In this analysis, we will examine and compare unemployment rates in Calgary, Alberta, and Canada as a whole, using data from January 2020 to June 2021. By understanding these rates, we aim to identify potential disparities and gain insights into how Calgary's employment situation aligns with both the broader provincial and national trends. This comparison will shed light on the relative economic health of Calgary within Alberta and Canada, highlighting areas of strength or vulnerability.
+
+First we load the data set obtained from the city of Calgary's open data portal, stored in the github link mentioned below.
+
+**1. Reading the dataset**
 ```{r}
-# Load the CSV file (update path if necessary)
-data <- read_csv("dataset.csv")
+# Load the CSV file
+data <- read_csv("https://raw.githubusercontent.com/Gautham-Nagaraj/Data-602-Project/refs/heads/main/Dataset.csv")
 
 # Convert Date column to Date format (assuming "YYYY-MM" structure)
 data$Date <- as.Date(paste0(data$Date, "-01"), format="%Y-%m-%d")
 
 # View dataset structure
-str(data)
+head(data,3)
 
 ```
-
+There a lot of columns included in the dataset, but our focus shall be on the unemployment rates in Calgary, Alberta and Canada, along with the average hourly wage and inflation change.
 ```{r}
 ggplot(data, aes(x = Date)) +
   geom_line(aes(y = `Calgary CER Unemployment rate (%)`, color = "Calgary CER")) +
   geom_line(aes(y = `Alberta Unemployment Rate (%)`, color = "Alberta")) +
   geom_line(aes(y = `Canada Unemployment rate (%)`, color = "Canada")) +
-  labs(title = "Unemployment Rates Over Time",
+  labs(title = "Fig 1.0 Unemployment Rates Over Time",
        x = "Date",
        y = "Unemployment Rate (%)") +
   theme_minimal() +
@@ -44,36 +51,52 @@ ggplot(data, aes(x = Date)) +
 ```
 
 ```{r}
-ggplot(data, aes(x = Date, y = `Calgary (CMA) Average Hourly Wage Rate ($)`)) +
-  geom_line(color = "purple") +
-  labs(title = "Average Hourly Wage Rate in Calgary",
+ggplot(data, aes(x = Date))  +
+  geom_line(aes(y = `Calgary (CMA) Average Hourly Wage Rate ($)`,color = "Average Hourly wage Calgary")) +
+  labs(title = "Fig 1.1 Average Hourly Wage Rate in Calgary",
        x = "Date",
        y = "Wage Rate ($)") +
   theme_minimal()
 
 ```
+**2. Plotting quantile-quantile graphs to test normality of distribution**
 
+Conducting tests of normality, if we are to perform the z-test or t-test on two population proportions, we need to ensure that they are normally distributed. If not the test results would be incorrect and can lead to miscalculations.
+
+What is the normal distribution? In probability theory and statistics, a normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable.$\href{https://en.wikipedia.org/wiki/Normal_distribution}{^1}$
+
+Normal distributions are important in statistics and are often used in the natural and social sciences to represent real-valued random variables whose distributions are not known. 
+
+Their importance is partly due to the central limit theorem.$\href{https://en.wikipedia.org/wiki/Central_limit_theorem}{^2}$ It states that, under some conditions, the average of many samples (observations) of a random variable with finite mean and variance is itself a random variable—whose distribution converges to a normal distribution as the number of samples increases.
+
+We are unaware of the type of distribution that the dataset contains, thus through the central limiting theorem we can consider the distribution to be 'approximately' normally distributed.
+
+There are ways to test the normality of a distribution in r using qqplots$\href{https://desktop.arcgis.com/en/arcmap/latest/extensions/geostatistical-analyst/normal-qq-plot-and-general-qq-plot.htm#:~:text=QQ%20plot%20example-,Examining%20data%20distributions%20using%20QQ%20plots,deviate%20from%20the%20reference%20line.}{^3}$.
 ```{r}
-install.packages("car")  # Install if not already installed
-library(car)  # Load the package
+install.packages("car")
+library(car)
 
-# Select a variable (e.g., Wage Rate)
-qqPlot(data$`Calgary (CMA) Average Hourly Wage Rate ($)`, 
-       main = "QQ Plot for Wage Rate")
-
-# Check another variable (e.g., Unemployment Rate)
+par(mfrow=c(1,3))
 qqPlot(data$`Calgary CER Unemployment rate (%)`, 
-       main = "QQ Plot for Unemployment Rate")
+       main = "Fig 2.1 QQ Plot for Unemployment Rate in Calgary")
+
+qqPlot(data$`Alberta Unemployment Rate (%)`, 
+       main = "Fig 2.2 QQ Plot for Unemployment Rate in Alberta")
+
+qqPlot(data$`Canada Unemployment rate (%)`, 
+       main = "Fig 2.3 QQ Plot for Unemployment Rate in Canada")
 
 ```
+The above quantile-quantile graphs give us an idea of where the data lies in terms of the normal line. The graphs suggest that the distribution is approximately normal as most of the values lie near the normal line.
 
-```{r}
-shapiro.test(data$`Calgary (CMA) Average Hourly Wage Rate ($)`)
-shapiro.test(data$`Calgary CER Unemployment rate (%)`)
+**3. Hypothesis testing of mean unemployment rate of all 3 proportions**
 
-```
-***Since the QQ plot points closely follow the diagonal line, the data is normally distributed.Since the Shapiro-Wilk test p-value is > 0.05, the data is likely normal***
+The next part is to calculate if the mean unemployment rate of each of these proportions are equal. The reason for conducting a hypothesis test on these 3 proportions is to understand what it means when there are statistics being published about how the unemployment rate has decreased in Canada and what will be the change in unemployment for Calgary and Alberta. Understanding these differences will provide a basic understanding of how unemployment rates actually fluctuate between cities, provinces and the entire country.
 
+The hypothesis testing is conducted using the t-test$\href{https://pmc.ncbi.nlm.nih.gov/articles/PMC6676026/}{^4}$
+as the standard distribution of the proportions are unknown. The objective here is to test if the means of 2 proportions are equal, the null hypothesis would be mean of the first population - mean of the second population = 0, the means are equal. The alternate hypothesis would be the mean of the first population - mean of the second population is not equal to 0, the means are different.
+$H0: \mu1 - \mu2 =0$
+$H1: \mu1 - \mu2 \neq 0$
 ```{r}
 
 
@@ -103,11 +126,19 @@ ci2 <- ttest2$conf.int
 ci2
 
 ```
+```{r}
+#Hypothesis testing of mean unemployment rate between Calgary and Canada
+ttest3 <- t.test(calunemployment,caunemployment, alternative = "two.sided")
+ttest3
+ci2 <- ttest3$conf.int
+ci2
+```
 
 ```{r}
 # Interpret the p-values
 pvalue <- ttest$p.value
 pvalue2 <- ttest2$p.value
+pvalue3 <- ttest3$p.value
 
 if (pvalue < 0.05) {
   cat("The null hypothesis (Calgary vs Alberta) is rejected: There is a significant difference in the mean unemployment rates.\n")
@@ -116,10 +147,34 @@ if (pvalue < 0.05) {
 }
 
 if (pvalue2 < 0.05) {
-  cat("The null hypothesis (Alberta vs Calgary) is rejected: There is a significant difference in the mean unemployment rates.\n")
+  cat("The null hypothesis (Alberta vs Canada) is rejected: There is a significant difference in the mean unemployment rates.\n")
 } else {
-  cat("The null hypothesis (Alberta vs Calgary) is not rejected: No significant difference in the mean unemployment rates.\n")
+  cat("The null hypothesis (Alberta vs Canada) is not rejected: No significant difference in the mean unemployment rates.\n")
+}
+
+if (pvalue3 < 0.05) {
+  cat("The null hypothesis (Calgary vs Canada) is rejected: There is a significant difference in the mean unemployment rates.\n")
+} else {
+  cat("The null hypothesis (Calgary vs Canada) is not rejected: No significant difference in the mean unemployment rates.\n")
 }
 
 ```
+Based on the results above we can make a say that the mean unemployment rates of Calgary and Alberta are similar, this give us an idea of how much the city of Calgary contributes to Alberta's economy growth.$\href{https://www.thecanadianencyclopedia.ca/en/article/calgary#:~:text=The%20city%20of%20Calgary%20is,region's%20oil%20and%20gas%20industry.}{^5}$
 
+**4. Conducting permutation tests on unemployment means of all 3 proportions**
+However these results are based on a t-test where we assume the distributions are approximately normally distributed, there is another way to conduct the test based on permutations.$\href{https://en.wikipedia.org/wiki/Permutation_test}{^6}$
+Which involves re sampling the data and then conduction t-tests, this provides a 'simulated' result with re sampled data and is more accurate as it does not assume any distribution of the proportion.
+
+**References:**
+
+*1] The normal distribution : https://en.wikipedia.org/wiki/Normal_distribution*
+
+*2] Central Limit theorem : https://en.wikipedia.org/wiki/Central_limit_theorem*
+
+*3] Quantile-Quantile plots : https://desktop.arcgis.com/en/arcmap/latest/extensions/geostatistical-analyst/normal-qq-plot-and-general-qq-plot.htm#:~:text=QQ%20plot%20example-,Examining%20data%20distributions%20using%20QQ%20plots,deviate%20from%20the%20reference%20line.*
+
+*4] Student's t-test : https://pmc.ncbi.nlm.nih.gov/articles/PMC6676026/*
+
+*5] Calgary's importance to Alberta: https://www.thecanadianencyclopedia.ca/en/article/calgary#:~:text=The%20city%20of%20Calgary%20is,region's%20oil%20and%20gas%20industry.*
+
+*6] Permutation tests : https://en.wikipedia.org/wiki/Permutation_test*
