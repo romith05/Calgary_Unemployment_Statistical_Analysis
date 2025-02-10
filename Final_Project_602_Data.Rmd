@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 library(ggplot2)
 library(dplyr)
 library(readr)
@@ -73,4 +74,52 @@ shapiro.test(data$`Calgary CER Unemployment rate (%)`)
 ```
 ***Since the QQ plot points closely follow the diagonal line, the data is normally distributed.Since the Shapiro-Wilk test p-value is > 0.05, the data is likely normal***
 
+```{r}
+
+
+# Extract unemployment rates for Calgary and Alberta
+calunemployment <- data$`Calgary CER Unemployment rate (%)`
+abunemployment <- data$`Alberta Unemployment Rate (%)`
+summary(calunemployment)
+summary(abunemployment)
+ttest <- t.test(calunemployment, abunemployment, alternative = "two.sided")#perform ttest
+ttest
+ci <- ttest$conf.int # display the 95% confidence interval
+ci
+
+
+```
+
+
+```{r}
+
+# Extract unemployment rates for Calgary and Alberta`
+
+caunemployment <- data$`Canada Unemployment rate (%)`
+summary(caunemployment)
+ttest2 <- t.test(abunemployment,caunemployment, alternative = "two.sided")
+ttest2
+ci2 <- ttest2$conf.int
+ci2
+
+```
+
+```{r}
+# Interpret the p-values
+pvalue <- ttest$p.value
+pvalue2 <- ttest2$p.value
+
+if (pvalue < 0.05) {
+  cat("The null hypothesis (Calgary vs Alberta) is rejected: There is a significant difference in the mean unemployment rates.\n")
+} else {
+  cat("The null hypothesis (Calgary vs Alberta) is not rejected: No significant difference in the mean unemployment rates.\n")
+}
+
+if (pvalue2 < 0.05) {
+  cat("The null hypothesis (Alberta vs Calgary) is rejected: There is a significant difference in the mean unemployment rates.\n")
+} else {
+  cat("The null hypothesis (Alberta vs Calgary) is not rejected: No significant difference in the mean unemployment rates.\n")
+}
+
+```
 
