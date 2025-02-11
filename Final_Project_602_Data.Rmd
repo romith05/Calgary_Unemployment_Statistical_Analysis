@@ -269,7 +269,48 @@ combined_table <- data.frame(
 
 kable(combined_table, caption = "Confidence interval from permutations vs confidence interval from ttest",align = "l" ,linesep = "\\hline")
 ```
+**6.** Constructing a regression model using Cochrane-Orcutt method $\href{https://www.rdocumentation.org/packages/orcutt/versions/2.3/topics/cochrane.orcutt}{^7}$: Interactive method using to solve first order autocorrelation problems. This procedure estimates both autocorrelation and beta coefficients recursively until we reach the convergence or where the difference between successive error terms stabilizes. The Durbin-Watson test $\href{https://www.investopedia.com/terms/d/durbin-watson-statistic.asp}{^8}$ is used to find autocorrelation in the residuals from the statistic model.
+```{r}
+library(orcutt)
 
+# ... (Load your data as before) ...
+
+# 1. Build the initial linear regression model (OLS)
+ols_model <- lm(`Alberta Unemployment Rate (%)` ~ `Calgary CER Unemployment rate (%)`, data = data)
+
+# Summarize the OLS model (look for signs of autocorrelation in the residuals)
+summary(ols_model)
+
+# 2. Perform Durbin-Watson test for autocorrelation in the OLS model
+dwtest(ols_model)
+
+# 3. Apply Cochrane-Orcutt correction to the OLS model
+co_model <- cochrane.orcutt(ols_model)  # Pass the OLS model directly
+
+# Summarize the Cochrane-Orcutt model
+summary(co_model)
+
+# 4. Perform Durbin-Watson test AGAIN on the Cochrane-Orcutt model residuals
+dwtest(co_model$model) # Note: $model extracts the model part from the co_model object
+
+co_model$coefficients
+```
+The durbin-watson test performed on the output of the cochrane-orcutt estimation, there is still some autocorrelation, but the p-value obtained is much higher indicating that there was a significant decrease in the correlation.
+
+After performing the cochrane-orcutt estimation the coefficients obtained were 0.003817468 0.932498796, wherein the 
+Intercept is 0.003817468 and the slope, of Calgary unemployment rate, is 0.932498796. 
+
+The intercept  suggests that when the Calgary unemployment rate is 0%, the Alberta unemployment rate is estimated to be approximately 0.38%.  It's important to consider if a 0% unemployment rate for Calgary is realistic within the context of the data.
+
+This is the key coefficient. It indicates that for every 1 percentage point increase in the Calgary unemployment rate, the Alberta unemployment rate is predicted to increase by approximately 0.93 percentage points, after accounting for the autocorrelation in the data.
+
+```{r}
+plot(data$`Calgary CER Unemployment rate (%)`, data$`Alberta Unemployment Rate (%)`,
+     xlab = "Calgary Unemployment Rate (%)", ylab = "Alberta Unemployment Rate (%)",
+     main = "Fig 2.4 Alberta vs. Calgary Unemployment with Cochrane-Orcutt Regression Line")
+
+abline(co_model, col = "blue", lwd = 2)
+```
 
 **References:**
 
@@ -284,3 +325,7 @@ kable(combined_table, caption = "Confidence interval from permutations vs confid
 *5] Calgary's importance to Alberta: https://www.thecanadianencyclopedia.ca/en/article/calgary#:~:text=The%20city%20of%20Calgary%20is,region's%20oil%20and%20gas%20industry.*
 
 *6] Permutation tests : https://en.wikipedia.org/wiki/Permutation_test*
+
+*7] Cochrane-Orcutt Estimation : https://www.rdocumentation.org/packages/orcutt/versions/2.3/topics/cochrane.orcutt*
+
+*8] Durbin-Watson test : https://www.investopedia.com/terms/d/durbin-watson-statistic.asp*
