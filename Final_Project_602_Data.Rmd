@@ -78,13 +78,13 @@ library(car)
 
 par(mfrow=c(1,3))
 qqPlot(data$`Calgary CER Unemployment rate (%)`, 
-       main = "Fig 2.1 QQ Plot for Unemployment Rate in Calgary")
+       main = "Fig 2.1 QQ Plot Unemployment Calgary")
 
 qqPlot(data$`Alberta Unemployment Rate (%)`, 
-       main = "Fig 2.2 QQ Plot for Unemployment Rate in Alberta")
+       main = "Fig 2.2 QQ Plot Unemployment Alberta")
 
 qqPlot(data$`Canada Unemployment rate (%)`, 
-       main = "Fig 2.3 QQ Plot for Unemployment Rate in Canada")
+       main = "Fig 2.3 QQ Plot Unemployment Canada")
 
 ```
 The above quantile-quantile graphs give us an idea of where the data lies in terms of the normal line. The graphs suggest that the distribution is approximately normal as most of the values lie near the normal line.
