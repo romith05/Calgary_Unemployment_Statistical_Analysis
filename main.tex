@@ -1,0 +1,295 @@
+\documentclass[11pt]{article} 
+\usepackage[margin=1in]{geometry} % 1-inch margins
+\usepackage{times} % Use Times New Roman font
+\usepackage{graphicx} % For images
+\usepackage{amsmath, amssymb} % Math symbols
+\usepackage{hyperref} % Clickable links
+\usepackage{xcolor} % Colored text
+\usepackage{caption, subcaption} % Better captions
+\usepackage{float} % Better figure placement
+\usepackage{biblatex} % Bibliography
+\addbibresource{references.bib} % Reference file
+\usepackage{tikz} % For page border
+
+% Adjust the border inward
+\usepackage{eso-pic}
+\newcommand\AtPageBorders{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \draw[line width=1pt] 
+        ([xshift=10mm, yshift=10mm] current page.south west) 
+        rectangle 
+        ([xshift=-10mm, yshift=-10mm] current page.north east);
+    \end{tikzpicture}
+}
+\AddToShipoutPicture{\AtPageBorders} % Apply border to all pages
+
+\begin{document}
+
+% Title Section
+\title{
+    \fontsize{24pt}{26pt}\textbf{Calgary Unemployment Analysis} 
+}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{UofC logo.pdf} % Adjust path if needed
+\end{figure}
+
+\author{
+    \vspace{0.5cm}
+    \fontsize{20pt}{22pt}\selectfont Ammar O \\
+    \vspace{0.5cm} % Space between names
+    \fontsize{20pt}{22pt}\selectfont Gautham Nagaraj\\
+    \vspace{0.5cm} % Space between names
+    \fontsize{20pt}{22pt}\selectfont Ria  \\
+    \vspace{0.5cm} % Space between names
+    \fontsize{20pt}{22pt}\selectfont Romith Bondada
+}
+\date{
+\vspace{0.5cm}
+\fontsize{22pt}{24pt}\selectfont DATA 602\\
+\vspace{0.25cm}
+\fontsize{22pt}{24pt}\selectfont Statistical Data Analysis\\
+\vspace{0.25cm}
+\fontsize{22pt}{24pt}\selectfont Instructor: De Leon, Alexander
+}
+
+\maketitle
+\newpage
+
+
+
+% Introduction
+\section{Introduction}
+Unemployment isn’t just a statistic—it’s about people, families, and communities. Behind every percentage point, there are real lives affected: individuals struggling to find work, businesses trying to stay afloat, and policymakers searching for solutions. In a city like Calgary, where industries like oil and technology play a major role in shaping the job market, understanding unemployment isn’t just about numbers—it’s about the future of the city and the well-being of its people.
+
+This project is interesting because it goes beyond simply tracking unemployment rates. It asks deeper questions:
+\begin{itemize}
+    \item How do economic shifts, like fluctuations in oil prices, impact job security?
+    \item What patterns can we uncover in the job market that might help predict future employment trends?
+    \item How can this data be used to shape policies that make a difference in people’s lives?
+\end{itemize}
+
+By analyzing unemployment trends in Calgary, we gain insights that could help businesses plan better, inform government policies, and ultimately support people in finding stable jobs. Whether helping a new graduate understand job prospects or guiding decision-makers on where to invest resources, this project has a real-world impact.
+
+At its core, this is about people—about their struggles, their opportunities, and the future they’re trying to build. That’s what makes it worth studying.
+\section{Background}
+Unemployment is more than just a statistic—it’s a lived experience that affects individuals, families, and entire communities. In Calgary, job losses have been particularly challenging, as many workers rely on industries sensitive to economic fluctuations. Understanding the factors behind unemployment, its impact on people’s lives, and the patterns hidden in employment data can help us find better solutions for those affected.
+
+1. What Drives Unemployment?\newline
+Unemployment doesn’t happen in isolation. It’s shaped by economic conditions, government policies, and changes in industries. Calgary’s job market, for example, is closely tied to the oil and gas industry, which means that global energy price shifts can lead to waves of job losses. Research by \cite{baldwin2020impact} and Macdonald (2020) highlights how Alberta’s economy has suffered from energy market downturns, leading to financial instability for many households. Similarly, \cite{marchand2012distributional} found that when oil prices drop, unemployment rises—especially for workers in fields that depend on energy production. This pattern shows that Calgary’s workforce is vulnerable to factors beyond its control.
+
+2. How Can We Understand and Predict Unemployment?\newline
+To tackle unemployment, we need to understand it first. Traditionally, economists have used time series analysis and regression models to study labor trends. \cite{riddell1998labor} analyzed labor market fluctuations in Canada, identifying key patterns in job losses and recoveries. More recently, machine learning techniques have been used to track employment trends in real-time. For example, \cite{pappas2018bigdata} used big data from social media and job postings to detect shifts in employment patterns, helping researchers predict downturns before they happen.
+
+4. What Makes Calgary Different?\newline
+Calgary’s employment situation is unique because of its economic structure. Statistics Canada (2023) reports that unemployment in Calgary is often higher than in other Canadian cities, largely due to the boom-and-bust cycle of the energy sector. Research from \cite{ucalgary2021economic} (2021) suggests that the best way to stabilize employment in the city is to invest in new industries, such as technology and renewable energy. Diversifying the economy could provide workers with more options and reduce dependence on volatile industries.
+\newline
+The research on unemployment tells a clear story: economic shifts, personal struggles, and labor market trends are all interconnected. Calgary’s workforce faces unique challenges, but there are also opportunities to build a more resilient job market. By applying modern data science techniques, this project aims to shed light on Calgary’s employment patterns and offer insights that could help policymakers and job seekers alike.
+
+\section{Data \& Methods}
+\subsection{Quantile-Quantile Plots}
+Normal distribution, also known as the Gaussian distribution, is a probability distribution that appears as a "bell curve" when graphed. The normal distribution describes a symmetrical plot of data around its mean value, where the width of the curve is defined by the standard deviation. To confirm the normality of the distribution, we have used QQ plots. The QQ plot, or quantile-quantile plot, is a graphical tool to help us assess if a set of data plausibly came from some theoretical distribution such as a normal or exponential. For example, if we run a statistical analysis that assumes our residuals are normally distributed, we can use a normal QQ plot to check that assumption. It's just a visual check, not an air-tight proof, so it is somewhat subjective. But it allows us to see if our assumption is plausible, and if not, how the assumption is violated and what data points contribute to the violation.\cite{qqplot_uvlibrary}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Screenshot 2025-02-13 195723.png}
+    \caption{Sample Normal QQ plot}
+    \label{fig:enter-label}
+\end{figure}
+
+A QQ plot is a scatterplot created by plotting two sets of quantiles against one another. If both sets of quantiles came from the same distribution, we should see the points forming a roughly straight. Here's an example of a normal QQ plot when both sets of quantiles truly come from normal distributions.
+\subsection{T-test}
+A t-test is an inferential statistic used to determine if there is a significant difference between the means of two groups and how they are related. T-tests are used when the data sets follow a normal distribution and have unknown variances, like the data set recorded from flipping a coin 100 times.\cite{ttest_investopedia}
+The formula for computing the t-value in a paired t-test is:
+
+\[
+T = \frac{\text{mean}_1 - \text{mean}_2}{s(\text{diff}) / \sqrt{n}}
+\]
+
+where:
+\begin{itemize}
+    \item \(\text{mean}_1\) and \(\text{mean}_2\) are the average values of each sample.
+    \item \(s(\text{diff})\) is the standard deviation of the differences of the paired samples.
+    \item \(n\) is the sample size (number of paired differences).
+    \item \(n - 1\) is the degrees of freedom.
+\end{itemize}
+\subsection{Permutation Tests}
+It's a powerful and versatile tool, especially useful when dealing with situations where traditional parametric assumptions (like normality) might not hold.
+The Basic Idea
+Imagine you have two groups, and you want to know if there's a real difference between them.  A permutation test asks: "If there were no real difference between these groups (the null hypothesis is true), how likely is it that I'd see the difference I observed just by random chance?"
+Instead of relying on theoretical distributions (like the t-distribution or F-distribution), permutation tests use the data itself to create a distribution under the null hypothesis.
+How it Works (Step-by-Step)
+\begin{itemize}
+    
+ \item Calculate the Observed Statistic: You start by calculating the statistic you're interested in from your original data.  This could be the difference in means, the difference in medians, or any other metric that quantifies the difference between your groups.
+ \item Combine the Data: You pool all the data from both groups together, pretending for a moment that the group labels don't matter.
+ \item Randomly Permute the Data: You shuffle the combined data randomly.  This simulates what would happen if the group assignments were completely random.
+ \item Calculate the Statistic for the Permuted Data: You split the shuffled data back into two groups (using the original group sizes) and calculate the same statistic as you did in step 1 (e.g., the difference in means).
+ \item Repeat Many Times: You repeat steps 3 and 4 a large number of times (e.g., 1000 or 10000 times). Each time, you get a new value of the statistic, creating a permutation distribution.
+ \item Calculate the P-value: The p-value is the proportion of permuted statistics that are as extreme as, or more extreme than, the statistic you observed in your original data. "More extreme" depends on whether you're doing a one-tailed or two-tailed test.
+ \begin{itemize}
+      \item Two-tailed:  Count how many permuted differences are greater than or equal to the absolute value of your observed difference or less than or equal to the negative of the absolute value of your observed difference.
+      \item One-tailed: If you're testing if group A is greater than group B, count how many permuted differences are greater than or equal to your observed difference.
+ \end{itemize}
+ \item Make a Decision: If the p-value is less than your chosen significance level (alpha, usually 0.05), you reject the null hypothesis.  This means it's unlikely you'd have seen the difference you observed if there were no real difference between the groups.
+ Advantages of Permutation Tests:
+ \begin{itemize}
+     \item No distributional assumptions: You don't have to assume your data is normally distributed.
+ Versatile: Can be used with many different statistics, not just means.
+     \item Intuitive: The logic is straightforward and easy to understand.
+\end{itemize}
+Disadvantages of Permutation Tests
+\begin{itemize}
+ \item Computationally intensive: Can take a long time for very large datasets.
+ \item P-values are discrete: The p-value is limited by the number of permutations you run. You can't get a p-value of exactly zero.
+\end{itemize}
+In summary: Permutation testing is a powerful and flexible statistical method that lets you test hypotheses without making strong assumptions about the underlying distributions of your data.  It's particularly useful when dealing with small sample sizes or data that doesn't meet the assumptions of traditional parametric tests.
+\end{itemize}
+\subsection{Regression Analysis}
+\subsection{cochrane-orcutt}
+The Cochrane-Orcutt regression method is used to correct for autocorrelation (especially first-order autocorrelation) in time series regression models. Interactive method used to solve first-order autocorrelation problems. This procedure estimates both autocorrelation and beta coefficients recursively until we reach the convergence or where the difference between successive error terms stabilizes. It is a transformational method that modifies data to improve the efficiency of regression estimates when errors are correlated across time. The Durbin-Watson test is used to find autocorrelation in the residuals from the statistic model.
+\newline
+When working with time series data, residuals $(\varepsilon_t)$ often show correlation with past values $(\varepsilon_{t-1})$.
+If autocorrelation exists:\newline
+-    OLS regression produces inefficient estimates (inflated standard errors, incorrect p-values).\newline
+-    Hypothesis tests become unreliable (Type I and Type II errors increase).\newline
+-    Model predictions are less accurate.\newline
+If we regress Calgary unemployment rate $(X_t)$ on Alberta unemployment rate $(Y_t)$, the errors $(\varepsilon_t)$ might be correlated over time, violating OLS assumptions.
+Cochrane-Orcutt fixes this by removing serial correlation from errors.
+\begin{itemize}
+    \item Step 1: Estimate the OLS Regression:\newline
+    $Y_t=\beta_0+\beta_1X_t+\varepsilon_t$\newline
+    - compute OLS estimates of $\beta_0$ and $\beta1$. \newline
+    - Store the residuals$(\varepsilon_t)$.
+    \item Step 2: Check for Autocorrelation:
+    \textbf{Durbin Watson Test}\newline
+    The Durbin Watson (DW) statistic is a test for autocorrelation in the residuals from a statistical model or regression analysis. The Durbin-Watson statistic will always have a value ranging between 0 and 4. A value of 2.0 indicates there is no autocorrelation detected in the sample. Values from 0 to less than 2 point to positive autocorrelation, and values from 2 to 4 mean negative autocorrelation.
+    Interpretation of DW statistic:
+    \begin{itemize}
+        \item DW$\approx$2 $\rightarrow$ No autocorrelation 
+        \item DW$ < $2 $\rightarrow$ Positive autocorrelation  (Cochrane-Orcutt needed)
+        \item DW$>$2 $\rightarrow$ Negative autocorrelation
+    \end{itemize}
+    \item step 3: Estimate the Autocorrelation Coefficient $\rho$:
+    \begin{itemize}
+        \item Run an autoregressive model on residuals:\newline
+        $\varepsilon_t = \rho \varepsilon_{t-1} + u_t$\
+        \item To estimate $\rho$, we regress residuals on their lagged values:\newline
+    $\hat{\varepsilon}_t = \rho \hat{\varepsilon}_{t-1} + u_t$
+    \end{itemize}
+    \item step 4: Transform the Variables:\newline
+    Once $\rho$ is estimated, transform the dependent and independent variables:\newline
+    $Y_t^* = Y_t - \rho Y_{t-1}$\newline
+    $X_t^* = X_t - \rho X_{t-1}$
+    \item step 5: Run OLS on Transformed Data. Now, fit the regression model on the transformed variables:\newline
+    $Y_t^* = \beta_0^* + \beta_1 X_t^* + \varepsilon_t^*$
+
+    \item Step 6: Iterate Until Convergence
+    Repeat Steps 3-5 until $\rho$ stabilizes, ensuring that the transformation effectively removes autocorrelation.
+    The cochrane-orcutt regression is hard to reproduce due to the orcutt library not being prescent in the CRAN repository at \cite{orcutt2023}
+The library was installed from the CRAN archive,
+\end{itemize}
+\section{Results}
+\subsection{Unemployment Rate Analysis}
+The unemployment rate trends in Calgary, Alberta, and Canada were analyzed using time-series data from January 2020 to June 2021. The visualization in Figure 1.0 shows that Calgary’s unemployment rate closely follows Alberta’s trends but exhibits slightly higher volatility. The national unemployment rate shows relatively stable fluctuations, suggesting regional variations in labor market dynamics.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{000010.png}
+    \caption{Unemployment Trend}
+    \label{fig:enter-label}
+\end{figure}
+\newpage
+\subsection{Normality Testing}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\linewidth]{WhatsApp Image 2025-02-14 at 17.59.51.jpeg}
+    \caption{Data before Normalisation}
+    \label{fig:enter-label}
+\end{figure}
+Here, we present the graph before normalization, where we observed that the data was not normally distributed. To address this, we applied the bestNormalize() function to each unemployment rate column.
+The bestNormalize() function automatically evaluates multiple normalization techniques, including Box-Cox, Yeo-Johnson, and z-score normalization, and selects the most effective transformation for the given data. The transformed values are then stored in x.t and assigned to new variables: calgary\_normal, alberta\_normal, and canada\_normal.
+After applying normalization, the data is now ready for statistical analysis, ensuring improved accuracy in hypothesis testing. Below, we present the graph after normalization, which demonstrates a significant improvement in data distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{WhatsApp Image 2025-02-14 at 17.59.51 (1).jpeg}
+    \caption{Data after Normalisation}
+    \label{fig:enter-label}
+\end{figure}
+
+\subsection{Hypothesis Testing}
+A two-sample t-test was conducted to compare the mean unemployment rates of Calgary, Alberta, and Canada. The hypothesis tests were structured as follows:
+
+\begin{itemize}
+    \item $H_0$: The mean unemployment rates between two regions are equal.
+    \item $H_1$: The mean unemployment rates between two regions are significantly different.
+\end{itemize}
+
+The results of the t-tests are as follows:
+\begin{itemize}
+    \item Calgary vs. Alberta: $t = 0.0080905$, $p-value = 0.9936$ (Fail to reject $H_0$; no significant difference)\newline
+        $95\ percent \ confidence\ interval:[-0.3153014 ,   0.3178882]$ 
+    \item Alberta vs. Canada: $t = 0.02353$, $p-value = 0.9813$ (Fail to reject $H_0$; no significant difference)\newline
+        $95\ percent\ confidence\ interval:[ -0.3114700, 0.3189606]$
+    \item Calgary vs. Canada: $t = 0.030898$, $p-value = 0.9754$ (Fail to reject $H_0$; no significant difference)\newline
+        $95\ percent\ confidence\ interval:[-0.3179011, 0.3279786]$
+\end{itemize}
+These findings suggest that Calgary and Alberta have similar unemployment trends, Alberta and Canada, as well as Calgary and Canada.
+\subsection{Permutation Testing}
+To validate the t-test results, permutation tests were conducted by resampling unemployment rate data. The permutation test results confirmed the statistical significance of differences observed in the t-tests, further supporting the conclusion that Calgary's unemployment dynamics align more closely with Alberta than with Canada.
+\begin{itemize}
+    \item Calgary vs. Alberta:  $p-value = 0.6955$ \newline
+     $95\% CI: [-0.0065, 0.0065]$ 
+    \item Alberta vs. Canada: $p-value = 0.0012$  \newline
+     $95\% CI: [-0.006666667, 0.006333333]$
+    \item Calgary vs. Canada: $p-value = 2e-04$ \newline
+     $95\% CI: [-0.0065, 0.0065]$
+\end{itemize}
+\subsection{Comparision}
+\begin{table}[h]
+    \centering
+    \textwidth=5in 
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Comparison} & \textbf{Lower\_Bound\_Perm} & \textbf{Upper\_Bound\_Perm} & \textbf{Lower\_Bound\_Ttest} & \textbf{Upper\_Bound\_Ttest} \\
+        \hline
+        Calgary vs. Alberta & -0.0065 &  0.0065 & -0.3153014 & 0.3178882 \\
+        \hline
+        Alberta vs. Canada & -0.006666667 & 0.006333333 & 0.0039697 & 0.0166970 \\
+        \hline
+        Calgary vs. Canada & -0.0065 & 0.0065 & 0.0055034 & 0.0181632 \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Confidence interval from permutations vs confidence interval from t-test}
+    \label{tab:confidence_intervals}
+\end{table}
+\textbf{Note:}The values obtained from the permutation testing are more accurate than the T-test as it does not depend on any assumptions that the data is normal. So, We will the results obtained from the permutation testings.
+\subsection{Cochrane-Orchutt Regression}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{WhatsApp Image 2025-02-14 at 21.00.18.jpeg}
+    \caption{Regression plot}
+    \label{fig:enter-label}
+\end{figure}
+After performing the Cochrane-Orcutt estimation, the coefficients obtained were 0.003817468 0.932498796, whereas in the 
+intercept is 0.003817468 and the slope of Calgary's unemployment rate is 0.932498796.\newline
+The intercept suggests that when the Calgary unemployment rate is 0\%, the Alberta unemployment rate is estimated to be approximately 0.38\%.  It is crucial to consider if a 0\% unemployment rate for Calgary is realistic within the context of the data.
+This is the key coefficient. It indicates that for every 1 percentage point increase in the Calgary unemployment rate, the Alberta unemployment rate is predicted to increase by approximately 0.93 percentage points, after accounting for the autocorrelation in the data.
+\section{Conclusions}
+\begin{itemize}
+    \item Since the p-value is much higher than alpha=0.05 in all the cases we fail to reject the null hypothesis, meaning there is no statistically significant difference between the unemployment rates of Calgary vs Alberta, Calgary vs Canada, and Alberta vs Canada.
+    \item $Alberta\ Unemployment\ Rate (\%) = 0.00382 + 0.93249 * Calgary CER Unemployment rate (\%)  + error$
+The regression model is given as:
+Alberta's Unemployment Rate (\%) is the dependent variable.
+Calgary CER Unemployment rate (\%) is the independent variable.
+0.003817468 is the intercept.
+0.932498796 is the slope (the coefficient for the Calgary unemployment rate).
+Error represents the unexplained variation in Alberta's unemployment rate. This error term is assumed to have no autocorrelation due to the Cochrane-Orcutt correction.
+
+\item The permutation test involves resampling the observed data many times to create a distribution of the test statistic under the null hypothesis. In simpler terms, the permutation test shuffles the unemployment data to create many different possible scenarios, which helps to understand the likelihood of the observed increase happening by chance. The p-value obtained from the permutation test corroborated the t-test results, strengthening the conclusion that the rise in unemployment rates was indeed significant.
+\end{itemize}
+
+
+% References
+\printbibliography 
+\end{document}
